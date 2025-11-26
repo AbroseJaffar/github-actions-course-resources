@@ -1,0 +1,75 @@
+name: Manual Branch Selection Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Select the branch to run the workflow on"
+        required: true
+        type: choice
+        options:
+          - main
+          - dummy
+          - develop
+
+      runStage:
+        description: "Choose which stage to run"
+        required: true
+        type: choice
+        options:
+          - BUILD
+          - TEST
+          - DEPLOY
+          - ALL
+
+jobs:
+
+  print-parameters:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print selected parameters
+        run: |
+          echo "Selected Branch: ${{ github.event.inputs.branch }}"
+          echo "Selected Stage: ${{ github.event.inputs.runStage }}"
+
+  build:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.inputs.runStage == 'BUILD' ||
+      github.event.inputs.runStage == 'ALL'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Build Step
+        run: |
+          echo "Running BUILD stage on ${{ github.event.inputs.branch }}"
+
+  test:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.inputs.runStage == 'TEST' ||
+      github.event.inputs.runStage == 'ALL'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Test Step
+        run: |
+          echo "Running TEST stage on ${{ github.event.inputs.branch }}"
+
+  deploy:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.inputs.runStage == 'DEPLOY' ||
+      github.event.inputs.runStage == 'ALL'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Deploy Step
+        run: |
+          echo "Running DEPLOY stage on ${{ github.event.inputs.branch }}"
