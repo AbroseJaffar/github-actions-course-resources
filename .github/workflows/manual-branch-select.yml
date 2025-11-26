@@ -11,6 +11,7 @@ on:
           - main
           - dummy
           - develop
+          - feature2
 
       runStage:
         description: "Choose which stage to run"
