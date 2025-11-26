@@ -1,0 +1,77 @@
+trigger: none   # Disable CI triggers so you can manually choose branch + stage
+
+parameters:
+  - name: branch
+    displayName: "Select Branch"
+    type: string
+    default: main
+    values:
+      - main
+      - dummy
+
+  - name: runStage
+    displayName: "Select Stage to Run"
+    type: string
+    default: ALL
+    values:
+      - BUILD
+      - TEST
+      - DEPLOY
+      - ALL
+
+stages:
+
+- stage: PrintParams
+  displayName: "Print Selected Parameters"
+  jobs:
+    - job: Print
+      steps:
+        - script: |
+            echo "Selected Branch: ${{ parameters.branch }}"
+            echo "Selected Stage: ${{ parameters.runStage }}"
+          displayName: Print Parameters
+
+
+# ---------------- BUILD STAGE ----------------
+- stage: Build
+  displayName: "BUILD Stage"
+  condition: or(
+      eq('${{ parameters.runStage }}', 'BUILD'),
+      eq('${{ parameters.runStage }}', 'ALL')
+    )
+  jobs:
+    - job: BuildJob
+      steps:
+        - script: |
+            echo "Running BUILD stage on branch ${{ parameters.branch }}"
+          displayName: Execute Build
+
+
+# ---------------- TEST STAGE ----------------
+- stage: Test
+  displayName: "TEST Stage"
+  condition: or(
+      eq('${{ parameters.runStage }}', 'TEST'),
+      eq('${{ parameters.runStage }}', 'ALL')
+    )
+  jobs:
+    - job: TestJob
+      steps:
+        - script: |
+            echo "Running TEST stage on branch ${{ parameters.branch }}"
+          displayName: Execute Tests
+
+
+# ---------------- DEPLOY STAGE ----------------
+- stage: Deploy
+  displayName: "DEPLOY Stage"
+  condition: or(
+      eq('${{ parameters.runStage }}', 'DEPLOY'),
+      eq('${{ parameters.runStage }}', 'ALL')
+    )
+  jobs:
+    - job: DeployJob
+      steps:
+        - script: |
+            echo "Running DEPLOY stage on branch ${{ parameters.branch }}"
+          displayName: Execute Deploy
