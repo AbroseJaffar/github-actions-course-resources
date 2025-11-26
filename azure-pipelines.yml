@@ -8,6 +8,7 @@ parameters:
     values:
       - main
       - dummy
+      - feature1
 
   - name: runStage
     displayName: "Select Stage to Run"
